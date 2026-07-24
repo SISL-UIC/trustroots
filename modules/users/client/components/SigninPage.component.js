@@ -4,7 +4,6 @@ import Board from '@/modules/core/client/components/Board';
 import {
   trackEvent,
   getCurrentRouteParams,
-  navigate,
 } from '@/modules/core/client/services/client-runtime';
 import { useAuth } from '@/modules/core/client/react-app/auth';
 import * as authApi from '@/modules/users/client/api/auth.api';
@@ -31,9 +30,9 @@ export default function SigninPage() {
 
   useEffect(() => {
     if (user) {
-      navigate('search.map');
+      redirectAfterSignin(Boolean(continueSignin), returnTo);
     }
-  }, [user]);
+  }, [continueSignin, returnTo, user]);
 
   function updateCredential(field, value) {
     setCredentials(current => ({
@@ -57,8 +56,6 @@ export default function SigninPage() {
         category: 'authentication',
         label: 'Login success',
       });
-
-      redirectAfterSignin(Boolean(continueSignin), returnTo);
     } catch (error) {
       setIsLoading(false);
       setAuthError(true);

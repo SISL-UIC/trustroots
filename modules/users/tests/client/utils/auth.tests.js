@@ -153,4 +153,9 @@ describe('auth utils', () => {
     redirectAfterSignin(true);
     expect(navigate).toHaveBeenCalledWith('search.map');
   });
+
+  it('redirects to search when sign-in should not continue', () => {
+    redirectAfterSignin(false, '/messages/alice');
+    expect(navigate).toHaveBeenCalledWith('search.map');
+  });
 });
