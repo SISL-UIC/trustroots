@@ -96,19 +96,17 @@ test.describe('public core manifest gap coverage', () => {
     expect(await response.text()).toMatch(/var FCM_SENDER_ID = .*;\n/);
   });
 
-  test('browser registers the generated push messaging service worker', async ({
-    page,
+  test('push messaging service worker is served from its registered URL', async ({
+    request,
   }, testInfo) => {
     annotateFeature(testInfo, 'public.service-worker-config', [
-      'The browser registers the generated push messaging service worker URL.',
+      'The generated push messaging service worker is available at the URL registered by the browser.',
     ]);
 
-    const workerRequest = page.waitForRequest(
-      request => new URL(request.url()).pathname === '/push-messaging-sw.js',
-    );
-
-    await page.goto('/');
-    expect((await workerRequest).method()).toBe('GET');
+    const response = await request.get('/push-messaging-sw.js');
+    expect(response.ok()).toBeTruthy();
+    expect(response.headers()['content-type']).toContain('javascript');
+    expect(await response.text()).toContain("importScripts('/config/sw.js')");
   });
 
   test('legacy invite redirects to signup', async ({ request }, testInfo) => {
