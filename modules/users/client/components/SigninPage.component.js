@@ -15,7 +15,11 @@ import {
 
 export default function SigninPage() {
   const { user, setUser } = useAuth();
-  const { continue: continueSignin, userhandle } = getCurrentRouteParams();
+  const {
+    continue: continueSignin,
+    returnTo,
+    userhandle,
+  } = getCurrentRouteParams();
   const [credentials, setCredentials] = useState({
     password: '',
     username: userhandle || '',
@@ -54,7 +58,7 @@ export default function SigninPage() {
         label: 'Login success',
       });
 
-      redirectAfterSignin(Boolean(continueSignin));
+      redirectAfterSignin(Boolean(continueSignin), returnTo);
     } catch (error) {
       setIsLoading(false);
       setAuthError(true);

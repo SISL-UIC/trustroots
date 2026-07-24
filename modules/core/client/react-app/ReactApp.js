@@ -19,7 +19,11 @@ export default function ReactApp({ navigate = defaultNavigate }) {
   const { user } = useAuth();
   const currentPath = useCurrentPath();
   const route = findRoute(currentPath);
-  const accessRedirect = getReactRouteAccessRedirect(route, user);
+  const accessRedirect = getReactRouteAccessRedirect(
+    route,
+    user,
+    `${window.location.pathname}${window.location.search}`,
+  );
   const redirect =
     route?.redirectTo || accessRedirect || (!route && '/not-found');
 

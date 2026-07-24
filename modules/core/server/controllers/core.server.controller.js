@@ -47,6 +47,7 @@ exports.renderIndex = function (req, res) {
   const accessRedirect = getReactRouteAccessRedirect(
     reactRoutePolicy,
     renderVars.user,
+    req.originalUrl,
   );
   const redirect = reactRoutePolicy?.redirectTo || accessRedirect;
 

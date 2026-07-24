@@ -436,12 +436,16 @@ function userHasRequiredRole(user, requiredRole) {
   return Boolean(requiredRole && (user?.roles || []).includes(requiredRole));
 }
 
-function getReactRouteAccessRedirect(route, user) {
+function getReactRouteAccessRedirect(route, user, returnTo) {
   if (!route) {
     return null;
   }
 
   if ((route.requiresAuth || route.requiresRole) && !user) {
+    if (returnTo) {
+      return `/signin?continue=true&returnTo=${encodeURIComponent(returnTo)}`;
+    }
+
     return '/signin';
   }
 

@@ -72,7 +72,7 @@ describe('SigninPage', () => {
       });
     });
 
-    expect(redirectAfterSignin).toHaveBeenCalledWith(false);
+    expect(redirectAfterSignin).toHaveBeenCalledWith(false, undefined);
   });
 
   it('shows an error message when sign-in fails', async () => {

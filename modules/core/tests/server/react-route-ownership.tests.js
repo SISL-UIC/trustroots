@@ -92,6 +92,13 @@ describe('React route ownership', function () {
       getReactRoutePolicy('/messages'),
       null,
     ).should.equal('/signin');
+    getReactRouteAccessRedirect(
+      getReactRoutePolicy('/messages'),
+      null,
+      '/messages?filter=unread',
+    ).should.equal(
+      '/signin?continue=true&returnTo=%2Fmessages%3Ffilter%3Dunread',
+    );
   });
 
   it('matches profile and contact route policies', function () {

@@ -253,7 +253,14 @@ describe('Core CRUD tests', function () {
     });
 
     it('redirects guests away from protected React-owned pages', function (done) {
-      agent.get('/admin').expect(302).expect('Location', '/signin').end(done);
+      agent
+        .get('/admin?tab=activity')
+        .expect(302)
+        .expect(
+          'Location',
+          '/signin?continue=true&returnTo=%2Fadmin%3Ftab%3Dactivity',
+        )
+        .end(done);
     });
 
     it('redirects non-admin users away from admin React-owned pages', function (done) {
@@ -323,7 +330,7 @@ describe('Core CRUD tests', function () {
       agent
         .get('/profile/alice')
         .expect(302)
-        .expect('Location', '/signin')
+        .expect('Location', '/signin?continue=true&returnTo=%2Fprofile%2Falice')
         .end(done);
     });
 

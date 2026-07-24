@@ -262,7 +262,11 @@ describe('<ReactApp />', () => {
 
     renderApp('/admin', {}, { navigate });
 
-    await waitFor(() => expect(navigate).toHaveBeenCalledWith('/signin'));
+    await waitFor(() =>
+      expect(navigate).toHaveBeenCalledWith(
+        '/signin?continue=true&returnTo=%2Fadmin',
+      ),
+    );
     expect(screen.queryByText('Admin route')).not.toBeInTheDocument();
   });
 

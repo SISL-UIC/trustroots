@@ -1,6 +1,7 @@
 import {
   applyAuthenticatedUser,
   getEmailFromToken,
+  getSafeReturnTo,
   getUsernameValidationError,
   redirectAfterSignin,
 } from '@/modules/users/client/utils/auth';
@@ -134,7 +135,21 @@ describe('auth utils', () => {
     expect(broadcastClientEvent).toHaveBeenCalledWith('userUpdated');
   });
 
-  it('redirects to search after signin', () => {
+  it('redirects to the requested local destination after continuing signin', () => {
+    redirectAfterSignin(true, '/messages/alice?tab=unread#latest');
+    expect(navigate).toHaveBeenCalledWith('/messages/alice?tab=unread#latest');
+  });
+
+  it('rejects external destinations after signin', () => {
+    expect(getSafeReturnTo('https://example.com')).toBeNull();
+    expect(getSafeReturnTo('//example.com')).toBeNull();
+    expect(getSafeReturnTo('messages/alice')).toBeNull();
+
+    redirectAfterSignin(true, '//example.com');
+    expect(navigate).toHaveBeenCalledWith('search.map');
+  });
+
+  it('redirects to search when there is no continuation destination', () => {
     redirectAfterSignin(true);
     expect(navigate).toHaveBeenCalledWith('search.map');
   });

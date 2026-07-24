@@ -58,6 +58,22 @@ export function applyAuthenticatedUser(user, setUser) {
   broadcastClientEvent('userUpdated');
 }
 
-export function redirectAfterSignin() {
-  navigate('search.map');
+export function getSafeReturnTo(returnTo) {
+  if (typeof returnTo !== 'string' || !returnTo.startsWith('/')) {
+    return null;
+  }
+
+  const destination = new URL(returnTo, window.location.origin);
+
+  if (destination.origin !== window.location.origin) {
+    return null;
+  }
+
+  return `${destination.pathname}${destination.search}${destination.hash}`;
+}
+
+export function redirectAfterSignin(continueSignin, returnTo) {
+  navigate(
+    continueSignin ? getSafeReturnTo(returnTo) || 'search.map' : 'search.map',
+  );
 }
