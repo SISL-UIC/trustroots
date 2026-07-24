@@ -311,7 +311,6 @@ module.exports.initHelmetHeaders = function (app) {
           'https://stats.g.doubleclick.net',
           'https://1p.trustroots.org', // Umami analytics
           'fcm.googleapis.com',
-          'https://sentry.io',
         ],
 
         // Allows control over Flash and other plugins.
