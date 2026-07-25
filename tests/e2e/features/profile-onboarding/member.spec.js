@@ -278,7 +278,12 @@ test.describe('confirmed member flows', () => {
     );
     await joinButton.click();
     await joinResponse;
-    await expect(joinButton).toContainText(/joined/i);
+    await expect(joinButton).toContainText("You're a member");
+    await expect(joinButton).toHaveClass(/btn-primary/);
+    await expect(joinButton).not.toHaveCSS(
+      'background-color',
+      'rgb(255, 255, 255)',
+    );
     await expect(joinButton).toHaveAttribute('aria-label', /leave circle/i);
 
     const leaveResponse = page.waitForResponse(
