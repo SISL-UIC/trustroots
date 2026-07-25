@@ -137,10 +137,7 @@ function runMocha(done) {
       ? configuredTestFiles
       : changedTestFiles.length > 0
       ? changedTestFiles
-      : glob.sync('modules/*/tests/server/**/*.js', {
-          // firebase-admin's dependency chain breaks on Node 22+
-          ignore: ['modules/core/tests/server/worker.tests.js'],
-        });
+      : glob.sync('modules/*/tests/server/**/*.js');
   let error;
 
   // Connect mongoose
@@ -174,11 +171,18 @@ function runMocha(done) {
               // and pass the error state back to gulp
               // @TODO: https://github.com/Trustroots/trustroots/issues/438
               // @link https://github.com/agenda/agenda/pull/450
-              agenda._mdb.close(function () {
-                mongooseService.disconnect(function () {
-                  done(error);
-                });
-              });
+              agenda.close().then(
+                function () {
+                  mongooseService.disconnect(function () {
+                    done(error);
+                  });
+                },
+                function (closeError) {
+                  mongooseService.disconnect(function () {
+                    done(error || closeError);
+                  });
+                },
+              );
             });
           })
           .catch(function (err) {
