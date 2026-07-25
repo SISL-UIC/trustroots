@@ -305,6 +305,12 @@ test.describe.serial('search offers and circles feature coverage', () => {
         'aria-label',
         /Leave circle/i,
       );
+      await expect(overviewJoinButton).toContainText("You're a member");
+      await expect(overviewJoinButton).toHaveClass(/btn-primary/);
+      await expect(overviewJoinButton).not.toHaveCSS(
+        'background-color',
+        'rgb(255, 255, 255)',
+      );
 
       const leave = await memberPage.request.delete(
         `/api/users/memberships/${hitchhikers._id}`,

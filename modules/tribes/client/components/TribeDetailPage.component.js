@@ -144,7 +144,9 @@ export default function TribeDetailPage({ user, onMembershipUpdated }) {
                     tribe={tribe}
                     user={user}
                     className="btn btn-lg btn-default"
+                    activeClassName="btn btn-lg btn-primary btn-action"
                     icon={false}
+                    memberLabel={t("You're a member")}
                     onUpdated={handleMembershipUpdated}
                   />
                   &nbsp;
