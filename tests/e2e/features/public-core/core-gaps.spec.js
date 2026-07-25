@@ -129,7 +129,10 @@ test.describe('public core manifest gap coverage', () => {
       .click();
     await expect(page).toHaveURL(/\/faq$/);
     await expect(
-      page.getByRole('heading', { name: /site & community/i }),
+      page.getByRole('heading', {
+        name: 'about the site & community',
+        exact: true,
+      }),
     ).toBeVisible();
     expect(
       await page.evaluate(() => Boolean(window.__trustrootsSpaDocument)),
