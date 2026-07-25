@@ -1,4 +1,5 @@
 import { matchReactRoute } from '@/modules/core/shared/react-route-ownership';
+import { navigateTo } from '@/modules/core/client/react-app/shell-helpers';
 
 const STATE_TARGETS = {
   home: '/',
@@ -65,11 +66,7 @@ export function navigate(to, params, options, location = window.location) {
     return undefined;
   }
 
-  if (typeof location.assign === 'function') {
-    location.assign(path);
-  } else {
-    location.href = path;
-  }
+  navigateTo(path, location);
 
   return undefined;
 }

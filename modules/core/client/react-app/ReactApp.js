@@ -6,9 +6,13 @@ import NotFoundPage from '@/modules/core/client/components/NotFoundPage.componen
 import { getReactRouteAccessRedirect } from '@/modules/core/shared/react-route-ownership';
 import { useAuth } from './auth';
 import ReactFooter from './ReactFooter';
-import { findRoute } from './routes';
+import { findRoute, isReactRoute } from './routes';
 import { useAppConfig, useSettings } from './AppProviders';
-import { defaultNavigate, signout } from './shell-helpers';
+import {
+  defaultNavigate,
+  getClientNavigationTarget,
+  signout,
+} from './shell-helpers';
 import { useCurrentPath } from './useCurrentPath';
 
 export { defaultNavigate, signout } from './shell-helpers';
@@ -17,7 +21,7 @@ export default function ReactApp({ navigate = defaultNavigate }) {
   const { title } = useAppConfig();
   const { build } = useSettings();
   const { user } = useAuth();
-  const currentPath = useCurrentPath();
+  const currentPath = useCurrentPath({ includeSearch: true });
   const route = findRoute(currentPath);
   const accessRedirect = getReactRouteAccessRedirect(
     route,
@@ -45,18 +49,37 @@ export default function ReactApp({ navigate = defaultNavigate }) {
     }
   }, [navigate, redirect]);
 
+  useEffect(() => {
+    const handleDocumentClick = event => {
+      const target = getClientNavigationTarget(event);
+
+      if (!target || !isReactRoute(target)) {
+        return;
+      }
+
+      event.preventDefault();
+      navigate(target);
+    };
+
+    document.addEventListener('click', handleDocumentClick);
+
+    return () => document.removeEventListener('click', handleDocumentClick);
+  }, [navigate]);
+
   return (
     <>
       <div id="tr-wrap">
         {!route?.headerHidden && <AppHeader onSignout={signout} user={user} />}
         <article className="content" id="tr-main" role="main" tabIndex="-1">
           {route && !redirect ? (
-            route.render({
-              params:
-                /* istanbul ignore next -- matched routes always provide parameter objects. */
-                route.params || {},
-              user,
-            })
+            <React.Fragment key={currentPath}>
+              {route.render({
+                params:
+                  /* istanbul ignore next -- matched routes always provide parameter objects. */
+                  route.params || {},
+                user,
+              })}
+            </React.Fragment>
           ) : (
             <NotFoundPage />
           )}

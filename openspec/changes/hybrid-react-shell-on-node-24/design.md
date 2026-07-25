@@ -33,6 +33,10 @@ continue on the supported runtime.
    shell work.
 4. **Worktree-safe ESLint:** `root: true` in `.eslintrc.js` so nested git
    worktrees do not load the parent repo ESLint config.
+5. **Preserve single-page navigation:** Once every application route is
+   React-owned, ordinary same-origin links and programmatic route changes use
+   the History API. Native browser handling remains in place for external,
+   downloaded, targeted, modifier-assisted, and fragment links.
 
 ## Risks / Trade-offs
 

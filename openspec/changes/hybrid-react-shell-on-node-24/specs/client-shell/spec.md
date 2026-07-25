@@ -49,3 +49,39 @@ React-owned path so the React shell loads.
   Angular page
 - **THEN** the browser performs a full navigation to that path
 - **AND** the React shell becomes the active client
+
+### Requirement: React single-page navigation
+
+After the Angular cutover, the system SHALL navigate between React-owned
+same-origin routes without reloading the browser document. It SHALL update the
+browser URL and history while preserving native browser behaviour for links
+that are external, downloaded, targeted at another browsing context, activated
+with modifier keys, or contain a fragment.
+
+#### Scenario: Visitor follows an internal application link
+
+- **WHEN** a visitor activates an ordinary link from one React-owned route to
+  another React-owned route
+- **THEN** the React shell updates the URL and rendered route
+- **AND** the current browser document remains loaded
+
+#### Scenario: Internal navigation changes query parameters
+
+- **WHEN** internal navigation changes the query string on a React-owned route
+- **THEN** the React shell observes the new URL
+- **AND** the affected route renders from the updated query parameters without
+  reloading the browser document
+
+#### Scenario: Visitor uses browser history
+
+- **WHEN** a visitor moves backwards or forwards through React-owned route
+  history
+- **THEN** the React shell renders the route represented by that history entry
+- **AND** the current browser document remains loaded
+
+#### Scenario: Link requires native browser behaviour
+
+- **WHEN** a visitor activates an external, downloaded, targeted,
+  modifier-assisted, or fragment link
+- **THEN** the application does not replace the browser's native link
+  behaviour

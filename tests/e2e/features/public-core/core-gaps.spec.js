@@ -1,3 +1,4 @@
+/* global window */
 const { annotateFeature, test, expect } = require('../../support/test');
 
 test.describe('public core manifest gap coverage', () => {
@@ -107,6 +108,39 @@ test.describe('public core manifest gap coverage', () => {
     expect(response.ok()).toBeTruthy();
     expect(response.headers()['content-type']).toContain('javascript');
     expect(await response.text()).toContain("importScripts('/config/sw.js')");
+  });
+
+  test('internal links preserve the React single-page shell and browser history', async ({
+    page,
+  }, testInfo) => {
+    annotateFeature(testInfo, 'public.single-page-navigation', [
+      'React-owned links update the URL without reloading the document.',
+      'Browser history restores the previous React-owned route in the same document.',
+    ]);
+
+    await page.goto('/rules');
+    await page.evaluate(() => {
+      window.__trustrootsSpaDocument = {};
+    });
+
+    await page
+      .locator('#tr-footer')
+      .getByRole('link', { name: 'FAQ', exact: true })
+      .click();
+    await expect(page).toHaveURL(/\/faq$/);
+    await expect(
+      page.getByRole('heading', { name: /site & community/i }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => Boolean(window.__trustrootsSpaDocument)),
+    ).toBeTruthy();
+
+    await page.goBack();
+    await expect(page).toHaveURL(/\/rules$/);
+    await expect(page.getByRole('heading', { name: /^rules$/i })).toBeVisible();
+    expect(
+      await page.evaluate(() => Boolean(window.__trustrootsSpaDocument)),
+    ).toBeTruthy();
   });
 
   test('legacy invite redirects to signup', async ({ request }, testInfo) => {

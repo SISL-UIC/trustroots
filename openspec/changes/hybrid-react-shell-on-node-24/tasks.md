@@ -14,6 +14,8 @@
 - [x] 2.2 Remove `angular*`, `ngreact`, `angular-ui-bootstrap`, and the Angular
       webpack entry. Serve React shell for all SPA/error pages.
 - [ ] 2.3 Update unit and end-to-end coverage for migrated surfaces.
+- [x] 2.4 Preserve History API navigation between React-owned routes, including
+      query-string and browser-history coverage.
 
 ## 3. Stage 3 — Bootstrap 5
 

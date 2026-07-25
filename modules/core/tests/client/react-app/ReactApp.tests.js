@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 
 import '@/config/client/i18n';
@@ -133,7 +133,12 @@ jest.mock('@/modules/support/client/components/SupportPage.component', () => {
   const React = require('react');
 
   function MockSupportPage({ user }) {
-    return <main>Support route {user?.username}</main>;
+    return (
+      <main>
+        <span>Support route {user?.username}</span>
+        <span>Query {global.location.search}</span>
+      </main>
+    );
   }
 
   MockSupportPage.propTypes = {
@@ -294,6 +299,57 @@ describe('<ReactApp />', () => {
     renderApp('/about', {}, { navigate });
 
     await waitFor(() => expect(navigate).toHaveBeenCalledWith('/'));
+  });
+
+  it('routes ordinary React-owned links through client navigation', () => {
+    const navigate = jest.fn();
+    renderApp('/rules', {}, { navigate });
+    const link = document.createElement('a');
+    link.href = '/faq?topic=routes';
+    link.textContent = 'FAQ';
+    document.body.appendChild(link);
+
+    try {
+      fireEvent.click(link);
+      expect(navigate).toHaveBeenCalledWith('/faq?topic=routes');
+    } finally {
+      link.remove();
+    }
+  });
+
+  it('remounts the current route when client navigation changes its query', async () => {
+    renderApp('/support?report=alice');
+    const link = document.createElement('a');
+    link.href = '/support?report=bob';
+    link.textContent = 'Change report';
+    document.body.appendChild(link);
+
+    try {
+      expect(screen.getByText('Query ?report=alice')).toBeInTheDocument();
+      fireEvent.click(link);
+      await screen.findByText('Query ?report=bob');
+      expect(window.location.pathname + window.location.search).toBe(
+        '/support?report=bob',
+      );
+    } finally {
+      link.remove();
+    }
+  });
+
+  it('leaves links outside React route ownership to the browser', () => {
+    const navigate = jest.fn();
+    renderApp('/rules', {}, { navigate });
+    const link = document.createElement('a');
+    link.href = '/api/auth/signout';
+    link.textContent = 'Sign out';
+    document.body.appendChild(link);
+
+    try {
+      fireEvent.click(link);
+      expect(navigate).not.toHaveBeenCalled();
+    } finally {
+      link.remove();
+    }
   });
 
   it('redirects unmatched paths to the not-found route', async () => {
