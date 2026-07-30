@@ -36,9 +36,9 @@ jobs:
     timeout-minutes: 6
   client:
     needs: build-dev-image
-    if: ${{ !cancelled() && (always() && (github.event_name != 'workflow_dispatch'
+    if: ${{ !cancelled() && (!cancelled() && (always() && (github.event_name != 'workflow_dispatch'
       || inputs.run_client) && (needs.build-dev-image.result == 'success' || needs.build-dev-image.result
-      == 'skipped')) }}
+      == 'skipped'))) }}
     runs-on: self-hosted
     steps:
     - uses: actions/checkout@v6
@@ -123,9 +123,9 @@ jobs:
     timeout-minutes: 6
   server:
     needs: build-dev-image
-    if: ${{ !cancelled() && (always() && (github.event_name != 'workflow_dispatch'
+    if: ${{ !cancelled() && (!cancelled() && (always() && (github.event_name != 'workflow_dispatch'
       || inputs.run_server) && (needs.build-dev-image.result == 'success' || needs.build-dev-image.result
-      == 'skipped')) }}
+      == 'skipped'))) }}
     runs-on: self-hosted
     steps:
     - uses: actions/checkout@v6
@@ -217,11 +217,11 @@ jobs:
   e2e:
     needs: build-dev-image
     if: |-
-      ${{ !cancelled() && (always() && (
+      ${{ !cancelled() && (!cancelled() && (always() && (
         (github.event_name == 'workflow_dispatch' && inputs.run_e2e) ||
         (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
         github.event_name == 'pull_request'
-      ) && (needs.build-dev-image.result == 'success' || needs.build-dev-image.result == 'skipped')) }}
+      ) && (needs.build-dev-image.result == 'success' || needs.build-dev-image.result == 'skipped'))) }}
     runs-on: self-hosted
     steps:
     - uses: actions/checkout@v6
@@ -293,7 +293,8 @@ jobs:
         if-no-files-found: ignore
     timeout-minutes: 6
   coverage-summary:
-    if: ${{ !cancelled() && (always() && github.event_name == 'pull_request') }}
+    if: ${{ !cancelled() && (!cancelled() && (always() && github.event_name == 'pull_request'))
+      }}
     needs:
     - client
     - server
@@ -452,9 +453,9 @@ jobs:
           }}
     timeout-minutes: 6
   pages-coverage:
-    if: ${{ !cancelled() && (always() && github.event_name != 'pull_request' && github.ref
-      == 'refs/heads/main' && needs.client.result == 'success' && needs.server.result
-      == 'success' && (needs.e2e.result == 'success' || needs.e2e.result == 'failure'))
+    if: ${{ !cancelled() && (!cancelled() && (always() && github.event_name != 'pull_request'
+      && github.ref == 'refs/heads/main' && needs.client.result == 'success' && needs.server.result
+      == 'success' && (needs.e2e.result == 'success' || needs.e2e.result == 'failure')))
       }}
     needs:
     - client
